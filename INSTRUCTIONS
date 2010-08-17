@@ -14,6 +14,7 @@ While there is lots of room for improvement, your specific is to create the Rail
 3) If you have a github account you can just fork it and work with the fork, then send us a pull request when you are done with the project.
 4) If you don't have a github account clone the project locally and [TODO add instructions here]
 5) Once you have a local copy you should be able to setup your database.yml, run rake db:migrate and run the app. Rake test should show all tests passing.
+6) You can (optionally) load randomly-generated seed data into your app by running rake db:seed
 
 If you go to the URI "/surveys" you will see a static html and javascript mockup of what the new summary charts should look like. Your task is to make the necessary changes to make the charts reflect actual data in the database. The user should be able to see the charts for two demographic parameters (age and gender) as shown in the mockup. The user should be able to see these for any of the parameters on left side of the page.
 
