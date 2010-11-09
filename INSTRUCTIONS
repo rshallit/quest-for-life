@@ -1,4 +1,3 @@
-
 Quest for life is an Astronomy education application. It is designed to teach users the following:
 
 1) The Drake Equation for the number of intelligent civilizations in our galaxy
@@ -18,4 +17,4 @@ While there is lots of room for improvement, your specific is to create the Rail
 
 If you go to the URI "/surveys" you will see a static html and javascript mockup of what the new summary charts should look like. Your task is to make the necessary changes to make the charts reflect actual data in the database. The user should be able to see the charts for two demographic parameters (age and gender) as shown in the mockup. The user should be able to see these for any of the parameters on left side of the page.
 
-Bonus points will be awarded for tests to support the charts, highlighting the columns with the user's parameter values and refactoring the survey's controller away from make_resourceful.
+Bonus points will be awarded for tests to support the charts, and highlighting the columns with the user's parameter values.
