@@ -85,72 +85,8 @@ class Survey < ActiveRecord::Base
     def l_options
       RationalOption.quotient_gte(1).quotient_lte(10**6).reject{|o| Math.log10(o.quotient) % 1 != 0}
     end
-    
-    def report(parameter, axis)
-      if 'n' == parameter.to_s
-        sql_parameter = "( SELECT CASE
-        when n <= 10 then ''||n
-        when n <= 20 then '10-20'
-        when n <= 100 then '21-100'
-        else 'over 100' END) as group_col"
-      else
-        sql_parameter = "#{parameter} as group_col"
-      end
-      sql = "select #{sql_parameter}, #{axis}, count(*) as count_surveys,
-        min(#{parameter}) as min, max(#{parameter}) as max,
-        avg(#{parameter}) as average, stddev_pop(#{parameter}) as stdev
-        from #{table_name}
-        where n is not null 
-        group by group_col, #{axis}"
-      
-      # Initialize the results hash
-      report_hash = {
-        :count => {},
-        :min => {},
-        :max => {},
-        :average => {},
-        :stdev => {},
-        :rational_options => [],
-        :values => {}
-      }
-      Survey.find_by_sql(sql).each do |group|
-        group_label = group.send(axis).blank? ? nil : group.send(axis)
-        
-        # initialize some values
-        report_hash[:count][group_label] = 0 if report_hash[:count][group_label].nil?
-        report_hash[:average][group_label] = 0 if report_hash[:average][group_label].nil?
-        report_hash[:stdev][group_label] = 0.0 if report_hash[:stdev][group_label].nil?
-        
-        report_hash[:count][group_label] += group.count_surveys.to_i
-        if report_hash[:min][group_label].nil? || report_hash[:min][group_label] > group.min.to_i
-          report_hash[:min][group_label] = group.min.to_i
-        end
-        if report_hash[:max][group_label].nil? || report_hash[:max][group_label] < group.max.to_i
-          report_hash[:max][group_label] = group.max.to_i
-        end
-        report_hash[:average][group_label] += (group.average.to_i * group.count_surveys.to_i)
-        report_hash[:stdev][group_label] += (group.stdev.to_f * group.count_surveys.to_f)
-        
-        report_hash[:rational_options] << group.group_col
-        report_hash[:values][group_label] = {} if report_hash[:values][group_label].nil?
-        if report_hash[:values][group_label][group.group_col]
-          report_hash[:values][group_label][group.group_col] += group.count_surveys.to_i
-        else
-          report_hash[:values][group_label][group.group_col] = group.count_surveys.to_i
-        end
-      end
-      report_hash[:rational_options] = report_hash[:rational_options].uniq
-      report_hash[:average].each do |key, value|
-        report_hash[:average][key] = value/report_hash[:count][key]
-      end
-      report_hash[:stdev].each do |key, value|
-        report_hash[:stdev][key] = value/report_hash[:count][key]
-      end
-      return report_hash
-    end
-
   end
-
+  
   belongs_to :survey_group
   belongs_to :age_group
     

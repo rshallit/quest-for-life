@@ -15,13 +15,15 @@
     = stylesheet_link_tag 'sunny/jquery-ui-1.7.2.custom.css'
     = stylesheet_link_tag 'ui.slider.extras'
     = stylesheet_link_tag 'visualize.jQuery.css'
+    = stylesheet_link_tag 'http://www.highcharts.com/highslide/highslide.css'
     = stylesheet_link_tag 'compiled/main.css', 'compiled/screen.css', :media => 'screen, projection'
     /[if lt IE 8]
       = stylesheet_link_tag 'compiled/ie.css', :media => 'screen, projection'
     /[if IE 7]
       = stylesheet_link_tag 'compiled/ie7.css', :media => 'screen, projection'
     /[if gte IE 8]
-      = stylesheet_link_tag 'compiled/ie8.css', :media => 'screen, projection'    
+      = stylesheet_link_tag 'compiled/ie8.css', :media => 'screen, projection'
+      
     = javascript_include_tag 'jquery-1.3.2.min.js'
     = javascript_include_tag 'jquery-ui-1.7.1.custom.min.js'
     = javascript_include_tag 'selectToUISlider.jQuery.js'
@@ -30,8 +32,11 @@
     /[if IE]
       = javascript_include_tag 'excanvas.compiled.js'
     = javascript_include_tag 'visualize.jQuery.js'
+    = javascript_include_tag 'highcharts.js'
+    = javascript_include_tag 'http://www.highcharts.com/highslide/highslide-full.min.js'
+    = javascript_include_tag 'http://www.highcharts.com/highslide/highslide.config.js'
 
-    = javascript_include_tag 'application'
+    = javascript_include_tag 'application.js'
     = partial '/shared/disqus_variables'
     
   %body{:lang => 'en', :class => 'nojs'}

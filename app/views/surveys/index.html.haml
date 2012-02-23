@@ -20,29 +20,5 @@
         %a{ :class => (parameter.to_s == summarize_parameter) ? 'yah' : '', :href => url_for(:p => parameter) }
           = parameter_to_drake_component parameter
 
-  .tab-body
-    %h2= Survey.title_for_parameter(summarize_parameter)
-    %h3= Survey.question_for_parameter(summarize_parameter)
-  
-    .all-responses
-    
-    .columns
-      .column
-        = chart summarize_parameter.to_sym, :age
+  = render :partial => 'parameter_results'
 
-      .column.legend
-        - options = chart_options(summarize_parameter, :age)
-        %ol.legend
-          - options[:rational_options].each_with_index do |option, i|
-            %li
-              %span{ :style => "background-color: #{chart_colors(summarize_parameter)[i]}"} &nbsp;
-              = option.send(options[:option_label_method])
-
-      .column
-        = chart summarize_parameter.to_sym, :gender
-
-
-:javascript
-  $(function() {
-    $('table.data').visualize({type: 'pie', colors: #{chart_colors(summarize_parameter).to_json}, width: 75, height: 75, pieMargin: 5, pieLabelPos: 'inside', parseDirection: 'y', });
-  });

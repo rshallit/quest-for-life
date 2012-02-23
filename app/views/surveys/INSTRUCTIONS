@@ -1,0 +1,20 @@
+
+Quest for life is an Astronomy education application. It is designed to teach users the following:
+
+1) The Drake Equation for the number of intelligent civilizations in our galaxy
+2) Enough Astronomy to estimate parameters in the Drake Equation
+3) The value of models in Science
+
+It is also a social experiment to see how different groups of people think about these parameters. It was created for the RailsRumble 2009 and is still in a beta stage. As such, this is not what we work with on a daily basis. More a rescue mission for a fun side project we built with far too-little sleep. However, munging data into charts is something we do on a regular basis, so measuring this skill set is important. We expect this exercise should take 2-4 hours to complete.
+ 
+While there is lots of room for improvement, your specific is to create the Rails code to create the summary charts. Here are some specific steps to getting started.
+
+1) Go to http://quest-for-life.org/ and explore the current app, so you understand how it works and what it is doing.
+2) The project is hosted in the public git repository here. http://github.com/shammond42/quest-for-life
+3) If you have a github account you can just fork it and work with the fork, then send us a pull request when you are done with the project.
+4) If you don't have a github account clone the project locally and [TODO add instructions here]
+5) Once you have a local copy you should be able to setup your database.yml, run rake db:migrate and run the app. Rake test should show all tests passing.
+
+If you go to the URI "/surveys" you will see a static html and javascript mockup of what the new summary charts should look like. Your task is to make the necessary changes to make the charts reflect actual data in the database. The user should be able to see the charts for two demographic parameters (age and gender) as shown in the mockup. The user should be able to see these for any of the parameters on left side of the page.
+
+Bonus points will be awarded for tests to support the charts, highlighting the columns with the user's parameter values and refactoring the survey's controller away from make_resourceful.
