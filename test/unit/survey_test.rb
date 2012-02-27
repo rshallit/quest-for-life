@@ -65,4 +65,32 @@ class SurveyTest < ActiveSupport::TestCase
     assert survey.save
     assert_equal "Male", survey.gender
   end
+
+  test "report" do
+    rational_options = [1, 10].map {|n| Factory.create(:rational_option, :numerator => 1, :denominator => n)}
+    age_groups = (1..2).map {|n| Factory.create(:age_group)}
+    surveys = [['Male', age_groups[0].id, rational_options[0].id],
+               ['Female', age_groups[1].id, rational_options[1].id],
+               [nil, nil, rational_options[1].id]].map do |g, a, r|
+      rational_option_hash = Hash[['r_star', 'fp', 'ne', 'fl', 'fi', 'fc', 'l'].
+                                  map {|param| ["#{param}_rational_id".to_sym, r]}]
+      Factory.create(:survey, {:gender => g, :age_group_id => a}.merge(rational_option_hash))
+    end
+    
+    data = [[:n, :all, nil, {:caption => 'All Estimates',
+        :data => [['0', 2], ['1-9', 1]]}],
+      [:n, :gender, 'Male', {:caption => 'Estimates by males',
+        :data => [['1-9', 1]]}],
+      [:n, :gender, nil, {:caption => 'Estimates by people of unknown gender',
+        :data => [['0', 1]]}],
+      [:ne, :all, nil, {:caption => 'All Estimates',
+        :data => [['1 in 10', 2], ['1', 1]]}],
+      [:ne, :age, age_groups[0].id, {:caption => "Estimates by age group #{age_groups[0].description}",
+        :data => [['1', 1]]}],
+      [:ne, :age, nil, {:caption => 'Estimates by age group unknown',
+        :data => [['1 in 10', 1]]}]]
+    data.each do |param, dimension, value, report|
+      assert_equal report, Survey.report(param, dimension, value)
+    end
+  end
 end

@@ -1,187 +1,51 @@
-var chart;
-$(document).ready(function() {
-	chart = new Highcharts.Chart({
-		chart: {
-			renderTo: 'ages-group',
-			defaultSeriesType: 'column'
-		},
-		title: {
-			text: 'Estimates by age group 26-35'
-		},
-		xAxis: {
-			categories: ['1', '10', '100', '1000']
-		},
-		yAxis: {
-			title: {
-				text: 'Number of Responses'
-			}
-		},
-		tooltip: {
-			formatter: function() {
-				return '' + this.y +' users responded with '+ this.x.toLowerCase();
-			}
-		},
-		plotOptions: {
-			column: {
-				data: 'data-ages-group',
-				// define a custom data parser function for both series
-				dataParser: function(data) {
-					var table = document.getElementById(data),
-						// get the data rows from the tbody element
-						rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr'),
-						// define the array to hold the real data
-						result = [], 
-						// decide which column to use for this series
-						column = { 'Count': 0 }[this.options.name];
-						
-					// loop through the rows and get the data depending on the series (this) name
-					for (var i = 0; i < rows.length; i++) {						
-						result.push(
-							parseInt(
-								rows[i].getElementsByTagName('td')[column]. // the data cell
-								innerHTML
-							)
-						);
-					}
-					return result;
-				}
-			}
-		},
-		credits: {
-			enabled: false
-		},
-		legend: {
-			enabled: false
-		},
-		series: [{
-			name: 'Count'
-		}]
+function makeChart(parameter, dimension, selectedValue) {
+    var options = {
+	chart: {
+	    renderTo: dimension + '-chart',
+	    defaultSeriesType: 'column'
+	},
+	xAxis: {
+	    categories: []
+	},
+	yAxis: {
+	    title: {
+		text: 'Number of Responses'
+	    }
+	},
+	credits: {
+	    enabled: false
+	},
+	legend: {
+	    enabled: false
+	},
+	series: [{
+		name: 'Count',
+		data: []
+	    }],
+	tooltip: {
+	    formatter: function() {
+		return '' + this.y +' users responded with '+ this.x.toLowerCase();
+	    }
+	}
+    };
+    $.getJSON(['/surveys', 'report', parameter, dimension].join('/'), {selected_value: selectedValue}, function(data) {
+	    options.title = {text: data.caption};
+	    $.each(data.data, function(index, row) {
+		    options.xAxis.categories.push(row[0]);
+		    options.series[0].data.push(row[1]);
+		});
+	    var chart = new Highcharts.Chart(options);
 	});
-	
-	
-});
+}
 
-var chart;
-$(document).ready(function() {
-	chart = new Highcharts.Chart({
-		chart: {
-			renderTo: 'gender-group',
-			defaultSeriesType: 'column'
-		},
-		title: {
-			text: 'Estimates by males'
-		},
-		xAxis: {
-			categories: ['1', '10', '100', '1000']
-		},
-		yAxis: {
-			title: {
-				text: 'Number of Responses'
-			}
-		},
-		tooltip: {
-			formatter: function() {
-				return '' + this.y +' users responded with '+ this.x.toLowerCase();
-			}
-		},
-		plotOptions: {
-			column: {
-				data: 'data-gender-group',
-				// define a custom data parser function for both series
-				dataParser: function(data) {
-					var table = document.getElementById(data),
-						// get the data rows from the tbody element
-						rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr'),
-						// define the array to hold the real data
-						result = [], 
-						// decide which column to use for this series
-						column = { 'Count': 0 }[this.options.name];
-						
-					// loop through the rows and get the data depending on the series (this) name
-					for (var i = 0; i < rows.length; i++) {						
-						result.push(
-							parseInt(
-								rows[i].getElementsByTagName('td')[column]. // the data cell
-								innerHTML
-							)
-						);
-					}
-					return result;
-				}
-			}
-		},
-		credits: {
-			enabled: false
-		},
-		legend: {
-			enabled: false
-		},
-		series: [{
-			name: 'Count'
-		}]
-	});
-	
-	
-});
+$(function() {
+	makeChart(currentParameter, 'all', '');
+	$.each(['age', 'gender'], function(index, dimension) {
+		var select = $('#' + dimension + '_select');
+		select.change(function() {
+			makeChart(currentParameter, dimension, $(this).val());
+		    });
+		select.change();
+	    });
+    });
 
-var chart;
-$(document).ready(function() {
-	chart = new Highcharts.Chart({
-		chart: {
-			renderTo: 'all',
-			defaultSeriesType: 'column'
-		},
-		title: {
-			text: 'All Estimates'
-		},
-		xAxis: {
-			categories: ['1', '10', '100', '1000']
-		},
-		yAxis: {
-			title: {
-				text: 'Number of Responses'
-			}
-		},
-		tooltip: {
-			formatter: function() {
-				return '' + this.y +' users responded with '+ this.x.toLowerCase();
-			}
-		},
-		plotOptions: {
-			column: {
-				data: 'data-all',
-				// define a custom data parser function for both series
-				dataParser: function(data) {
-					var table = document.getElementById(data),
-						// get the data rows from the tbody element
-						rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr'),
-						// define the array to hold the real data
-						result = [], 
-						// decide which column to use for this series
-						column = { 'Count': 0 }[this.options.name];
-						
-					// loop through the rows and get the data depending on the series (this) name
-					for (var i = 0; i < rows.length; i++) {						
-						result.push(
-							parseInt(
-								rows[i].getElementsByTagName('td')[column]. // the data cell
-								innerHTML
-							)
-						);
-					}
-					return result;
-				}
-			}
-		},
-		credits: {
-			enabled: false
-		},
-		legend: {
-			enabled: false
-		},
-		series: [{
-			name: 'Count'
-		}]
-	});
-	
-});

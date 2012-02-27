@@ -1,0 +1,13 @@
+- content_for :script do
+  %script(type='text/javascript')
+    = "var currentParameter = '#{@parameter}';"
+  = javascript_include_tag 'chart-content.js'
+
+.tab-body
+  %h2
+    = Survey.title_for_parameter(@parameter)
+  %h3
+    = Survey.question_for_parameter(@parameter)
+
+  - [:age, :gender, :all].each do |demographic|
+    = chart(@parameter, demographic, current_object)

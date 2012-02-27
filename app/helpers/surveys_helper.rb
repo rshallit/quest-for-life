@@ -41,57 +41,29 @@ module SurveysHelper
       :value_method => :id,
       :label_method => label_method
   end
-
-  # def chart_colors(parameter)
-  #   num_values = case parameter
-  #   when 'n'
-  #     4
-  #   else
-  #     Survey.options_for(parameter).size
-  #   end
-  #   
-  #   step = 128 / num_values
-  #   colors = (0...num_values).to_a.map { |i| "rgb(#{[128+i*step, i*step, 0].join(',')})"}.reverse
-  # end
-  # 
-  # def chart_options(parameter, dimension, options={})
-  #   options[:parameter] = parameter
-  #   options[:demographic] = dimension
-  # 
-  #   if :n == parameter.to_sym
-  #     parameter_col = parameter.to_s
-  #     options[:option_label_method] = :to_s
-  #     options[:option_value_method] = :to_s
-  #   else
-  #     parameter_col ="#{parameter}_rational_id"
-  #     options[:rational_options] = Survey.options_for(parameter)
-  #     options[:option_label_method] = :quotient_label
-  #     options[:option_value_method] = :id
-  #   end
-  #   
-  #   case dimension
-  #   when :age
-  #     options[:dimension] = AgeGroup.all + [AgeGroup.new(:id => nil, :description => 'Unknown')]
-  #     options[:data] = Survey.report(parameter_col, :age_group_id)
-  #     options[:dimension_key_method] = :id
-  #     options[:dimension_label_method] = :description
-  #   when :gender
-  #     options[:dimension] = ['Male','Female',nil]
-  #     options[:data] = Survey.report(parameter_col, :gender)
-  #     options[:dimension_key_method] = :to_s
-  #     options[:dimension_label_method] = :to_s
-  #   else
-  #     raise 'Invalid dimension'
-  #   end
-  # 
-  #   options[:rational_options] ||= options[:data][:rational_options].sort_by{|k| k.to_s.split('over').last.split('-').first.to_i}
-  #   
-  #   return options
-  # end
-  # 
-  # def chart(parameter, dimension, options={})
-  #   render :partial => 'chart_set', :locals => chart_options(parameter, dimension, options)
-  # end
+   
+  def chart_options(parameter, dimension, survey, options={})
+    options[:parameter] = parameter
+    options[:demographic] = dimension
+     
+    options[:select_options] = case dimension
+    when :age
+      (AgeGroup.all + [AgeGroup.new(:id => nil, :description => 'Unknown')]).map {|ag| [ag.description, ag.id]}
+    when :gender
+      [['Male']*2, ['Female']*2, ['Unknown', nil]]
+    end
+    if dimension != :all
+      survey_dimension_column = Survey.survey_dimension_column(dimension)
+      options[:selected] = survey.try(survey_dimension_column)
+    end
+    options[:data] = Survey.report(parameter, dimension, options[:selected])
+     
+    return options
+  end
+   
+   def chart(parameter, dimension, options={})
+     render :partial => 'chart_set', :locals => chart_options(parameter, dimension, options)
+   end
   
   def data_format(num)
     if num > 9_999_999

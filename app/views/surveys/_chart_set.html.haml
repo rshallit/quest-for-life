@@ -1,0 +1,6 @@
+- if demographic != :all
+  %label
+    Show #{demographic}:
+  = select_tag "#{demographic}_select", options_for_select(select_options, selected)
+
+.chart(id="#{demographic}-chart")

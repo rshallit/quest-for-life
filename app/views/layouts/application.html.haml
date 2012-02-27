@@ -37,6 +37,9 @@
     = javascript_include_tag 'http://www.highcharts.com/highslide/highslide.config.js'
 
     = javascript_include_tag 'application.js'
+
+    = yield :script
+
     = partial '/shared/disqus_variables'
     
   %body{:lang => 'en', :class => 'nojs'}

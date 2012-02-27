@@ -31,7 +31,7 @@ class SurveysController < ApplicationController
     belongs_to :survey_group
 
     before :index, :show do
-      @parameter = 'n' 
+      @parameter = params[:p] || 'n'
     end
 
     before :edit do
@@ -72,12 +72,24 @@ class SurveysController < ApplicationController
     end
   end
 
+  def report
+    respond_to do |format|
+      format.json do
+        render :json => Survey.report(params[:parameter], params[:dimension], params[:selected_value]).to_json
+      end
+    end
+  end
+
   def current_objects
     @current_objects ||= current_model.n_not_null #.paginate(:per_page => 20, :page => params[:page])
   end
   
   def current_object
-    @current_object ||= current_model.find_by_slug(params[:id]) if params[:id].present?
+    @current_object ||= if params[:id].present?
+        current_model.find_by_slug(params[:id]) 
+      elsif session[:survey_id].present?
+        current_model.find(session[:survey_id])
+      end
     return @current_object
   end
 

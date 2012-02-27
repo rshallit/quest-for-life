@@ -6,7 +6,6 @@
   send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
   
 - title 'Results'
-- summarize_parameter = params[:p] || 'n'
 
 %p
   - if parent?
@@ -17,7 +16,7 @@
   %ol.tabs
     - for parameter in ([:n] + Survey.parameter_columns)
       %li
-        %a{ :class => (parameter.to_s == summarize_parameter) ? 'yah' : '', :href => url_for(:p => parameter) }
+        %a{ :class => (parameter.to_s == @parameter) ? 'yah' : '', :href => url_for(:p => parameter) }
           = parameter_to_drake_component parameter
 
   = render :partial => 'parameter_results'

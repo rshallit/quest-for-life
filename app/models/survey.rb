@@ -85,6 +85,64 @@ class Survey < ActiveRecord::Base
     def l_options
       RationalOption.quotient_gte(1).quotient_lte(10**6).reject{|o| Math.log10(o.quotient) % 1 != 0}
     end
+
+    def report(parameter, dimension, selected_value)
+      parameter_column = if :n == parameter.to_sym
+        parameter.to_sym
+      else
+        "#{parameter}_rational_id".to_sym
+      end
+      count_options = {:group => parameter_column}
+      dimension_column = survey_dimension_column(dimension)
+      if dimension_column
+        count_options[:conditions] = selected_value.blank? ? "#{dimension_column} is null" : "#{dimension_column} = '#{selected_value}'"
+      end
+          
+      results = self.count(count_options)
+      if :n == parameter.to_sym
+        # group the results by order of magnitude
+        grouped_data = results.group_by {|k, v| order_of_magnitude_label(k)}
+        # sum the counts in each group
+        data = grouped_data.map {|k, v| [k, v.inject(0) {|sum, pair| sum + pair[1]}]}.
+          sort_by {|k, v| k.to_f}
+      else
+        data = results.map {|k, v| [RationalOption.find(k), v]}.
+          sort_by {|k, v| k.quotient}.
+          map {|k, v| [k.quotient_label, v]}
+      end
+      return {:caption => caption(dimension, selected_value), :data => data}
+    end
+
+    def order_of_magnitude_label(n)
+      if n == 0
+        "0"
+      else
+        log = Math.log10(n).floor
+        "#{10 ** log}-#{(10 ** (log + 1)) - 1}"
+      end
+    end
+
+    def caption(dimension, selected_value)
+      case dimension.to_sym
+      when :age
+        "Estimates by age group #{selected_value.present? ? AgeGroup.find(selected_value).description : 'unknown'}"
+      when :gender
+        "Estimates by #{selected_value.present? ? selected_value.downcase.pluralize : 'people of unknown gender'}"
+      when :all
+        'All Estimates'
+      end
+    end
+
+    def survey_dimension_column(dimension)
+      case dimension.to_sym
+      when :age
+        :age_group_id
+      when :gender
+        :gender
+      else
+        nil
+      end
+    end
   end
   
   belongs_to :survey_group
